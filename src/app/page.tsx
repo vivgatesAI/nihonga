@@ -127,9 +127,9 @@ function DetailView({ item, onClose }: { item: GalleryItem; onClose: () => void 
               </div>
               <div className="hidden sm:block text-right">
                 <span className="text-[9px] uppercase tracking-widest font-semibold px-2.5 py-1 rounded-full"
-                  style={{ backgroundColor: `${item.color}20`, color: item.color }}
+                  style={{ backgroundColor: item.category === 'traditional' ? `${item.color}20` : item.category === 'modern' ? `${item.color}20` : `${item.color}20`, color: item.color }}
                 >
-                  {item.category === 'traditional' ? 'Classical' : 'Modern'}
+                  {item.category === 'traditional' ? 'Classical' : item.category === 'modern' ? 'Modern' : 'Lifestyle'}
                 </span>
                 <p className="text-white/30 text-[11px] mt-1.5">{item.period}</p>
               </div>
@@ -165,12 +165,13 @@ function DetailView({ item, onClose }: { item: GalleryItem; onClose: () => void 
 
 export default function NihongaGallery() {
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  const [filter, setFilter] = useState<'all' | 'traditional' | 'modern'>('all');
+  const [filter, setFilter] = useState<'all' | 'traditional' | 'modern' | 'lifestyle'>('all');
   const galleryRef = useRef<HTMLDivElement>(null);
 
   const filteredGallery = filter === 'all' ? GALLERY : GALLERY.filter(g => g.category === filter);
   const traditionalCount = GALLERY.filter(g => g.category === 'traditional').length;
   const modernCount = GALLERY.filter(g => g.category === 'modern').length;
+  const lifestyleCount = GALLERY.filter(g => g.category === 'lifestyle').length;
 
   return (
     <div className="min-h-screen bg-washiDark text-sumi paper-texture">
@@ -194,7 +195,7 @@ export default function NihongaGallery() {
             Six centuries of Japanese art<br />in one gallery
           </p>
           <p className="text-inkFaint/40 text-sm max-w-lg mx-auto leading-relaxed mb-10">
-            From Edo-period woodblocks to cyberpunk neon. From Zen ink circles to chibi kawaii. Explore twelve distinct traditions — each revealing something different about the same endlessly fascinating culture.
+From Edo-period woodblocks to cyberpunk neon. From Zen gardens to samurai armor. From tea ceremony to festival fireworks. Explore twenty-two traditions — art, style, and daily life across six centuries.
           </p>
           <button
             onClick={() => galleryRef.current?.scrollIntoView({ behavior: 'smooth' })}
@@ -211,6 +212,9 @@ export default function NihongaGallery() {
           <span className="text-inkFaint/[0.08] font-display text-4xl select-none">墨</span>
           <span className="text-inkFaint/[0.08] font-display text-4xl select-none">琳</span>
           <span className="text-inkFaint/[0.08] font-display text-4xl select-none">禅</span>
+          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">着</span>
+          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">茶</span>
+          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">祭</span>
           <span className="text-inkFaint/[0.08] font-display text-4xl select-none">ア</span>
         </div>
       </section>
@@ -224,7 +228,7 @@ export default function NihongaGallery() {
           <h2 className="font-display text-2xl sm:text-3xl tracking-tight">The Gallery</h2>
           <div className="flex-1" />
           <div className="flex items-center gap-1 bg-white/[0.03] rounded-xl p-1 border border-white/[0.04]">
-            {(['all', 'traditional', 'modern'] as const).map(f => (
+            {(['all', 'traditional', 'modern', 'lifestyle'] as const).map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -232,7 +236,7 @@ export default function NihongaGallery() {
                   filter === f ? 'bg-white/[0.08] text-sumi' : 'text-inkFaint/50 hover:text-inkLight'
                 }`}
               >
-                {f === 'all' ? `All ${GALLERY.length}` : f === 'traditional' ? `Classical ${traditionalCount}` : `Modern ${modernCount}`}
+                {f === 'all' ? `All ${GALLERY.length}` : f === 'traditional' ? `Classical ${traditionalCount}` : f === 'modern' ? `Modern ${modernCount}` : `Lifestyle ${lifestyleCount}`}
               </button>
             ))}
           </div>
@@ -255,10 +259,10 @@ export default function NihongaGallery() {
       <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pb-24">
         <div className="ink-divider mb-10" />
         <h2 className="font-display text-2xl sm:text-3xl tracking-tight mb-2">Through the Centuries</h2>
-        <p className="text-inkFaint/50 text-sm mb-10">A timeline of Japanese art traditions, from temple screens to neon signs.</p>
+        <p className="text-inkFaint/50 text-sm mb-10">A timeline of Japanese art and culture, from temple screens to neon streets.</p>
 
         <div className="space-y-0">
-          {GALLERY.filter(g => g.category === 'traditional').sort((a, b) => {
+          {GALLERY.sort((a, b) => {
             const getYear = (p: string) => parseInt(p.match(/\d{4}/)?.[0] || '1400');
             return getYear(a.period) - getYear(b.period);
           }).map((item, idx) => (
