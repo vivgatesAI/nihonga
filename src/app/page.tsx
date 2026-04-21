@@ -39,21 +39,33 @@ function StyleCard({ item, index, onClick }: { item: GalleryItem; index: number;
           className="w-full h-full object-cover transition-transform duration-700"
           style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
         />
-        {/* Hover overlay */}
+        {/* Category badge */}
+        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[9px] uppercase tracking-wider font-semibold"
+          style={{ backgroundColor: item.category === 'traditional' ? 'rgba(184,150,62,0.2)' : item.category === 'modern' ? 'rgba(232,89,110,0.2)' : 'rgba(90,138,90,0.2)', color: item.category === 'traditional' ? '#b8963e' : item.category === 'modern' ? '#e8596e' : '#5a8a5a', backdropFilter: 'blur(8px)' }}
+        >
+          {item.category === 'traditional' ? 'Classical' : item.category === 'modern' ? 'Modern' : 'Lifestyle'}
+        </div>
+        {/* Always-visible name label */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent px-4 pt-8 pb-3">
+          <div className="flex items-center gap-2">
+            <SealMark char={item.kanji[0]} color={item.color} size={18} />
+            <span className="font-display text-[14px] text-white/90">{item.name}</span>
+            <span className="text-white/40 text-[11px]">{item.kanji}</span>
+          </div>
+        </div>
+        {/* Hover: description overlay */}
         <div className="absolute inset-0 transition-opacity duration-400"
-          style={{ opacity: hovered ? 1 : 0, background: `linear-gradient(to top, ${item.color}cc 0%, ${item.color}60 30%, transparent 70%)` }}
+          style={{ opacity: hovered ? 1 : 0, background: `linear-gradient(to top, ${item.color}ee 0%, ${item.color}99 40%, transparent 80%)` }}
         />
-        {/* Hover text */}
         <div className="absolute bottom-0 left-0 right-0 p-5 transition-all duration-400"
           style={{ opacity: hovered ? 1 : 0, transform: hovered ? 'translateY(0)' : 'translateY(10px)' }}
         >
-          <p className="text-white/80 text-[13px] leading-relaxed line-clamp-2">{item.description}</p>
-        </div>
-        {/* Category badge */}
-        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[9px] uppercase tracking-wider font-semibold"
-          style={{ backgroundColor: item.category === 'traditional' ? 'rgba(184,150,62,0.2)' : 'rgba(232,89,110,0.2)', color: item.category === 'traditional' ? '#b8963e' : '#e8596e', backdropFilter: 'blur(8px)' }}
-        >
-          {item.category}
+          <div className="flex items-center gap-2 mb-1.5">
+            <SealMark char={item.kanji[0]} color="#fff" size={18} />
+            <span className="font-display text-[14px] text-white">{item.name}</span>
+            <span className="text-white/40 text-[11px]">{item.period}</span>
+          </div>
+          <p className="text-white/90 text-[12px] leading-snug line-clamp-3">{item.description}</p>
         </div>
       </div>
 
@@ -103,7 +115,7 @@ function DetailView({ item, onClose }: { item: GalleryItem; onClose: () => void 
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:bg-black/60 hover:text-white transition-colors"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-sumi/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:bg-sumi/60 hover:text-white transition-colors"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
