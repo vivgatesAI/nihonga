@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { STYLES, generateCollage } from '@/lib/styles';
+import { generateCollage } from '@/lib/styles';
+
+// Allow up to 120 seconds for image generation
+export const maxDuration = 120;
 
 export async function POST(req: NextRequest) {
   try {

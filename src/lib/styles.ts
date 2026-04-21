@@ -77,35 +77,42 @@ export async function generateCollage(styles: string[], subject: string): Promis
     selectedStyles.map(async (style) => {
       const prompt = `${style.prompt} ${subject}. Masterful execution, museum quality, high detail, authentic materials.`;
 
-      const response = await fetch(`${VENICE_BASE}/images/generate`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${VENICE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'flux-2-max',
+      try {
+        const response = await fetch(`${VENICE_BASE}/image/generate`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${VENICE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'flux-2-max',
+            prompt,
+            width: 1024,
+            height: 1024,
+            seed: Math.floor(Math.random() * 999999),
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          console.error(`Image gen error for ${style.id}:`, error);
+          return { style: style.id, url: '', prompt };
+        }
+
+        const data = await response.json();
+        // Venice returns base64 encoded images
+        const b64 = data.images?.[0] || '';
+        const imageUrl = b64 ? `data:image/png;base64,${b64}` : '';
+
+        return {
+          style: style.id,
+          url: imageUrl,
           prompt,
-          width: 1024,
-          height: 1024,
-          style_preset: style.id === 'sumie' || style.id === 'zenenso' ? 'Photographic' : 'Photographic',
-          steps: 1,
-          seed: Math.floor(Math.random() * 999999),
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        console.error(`Image gen error for ${style.id}:`, error);
-        throw new Error(`Image generation failed for ${style.id}: ${response.status}`);
+        };
+      } catch (err) {
+        console.error(`Image gen exception for ${style.id}:`, err);
+        return { style: style.id, url: '', prompt };
       }
-
-      const data = await response.json();
-      return {
-        style: style.id,
-        url: data.images?.[0]?.url || data.data?.[0]?.url || '',
-        prompt,
-      };
     })
   );
 
