@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Nihonga — Japanese Art Style Generator',
-  description: 'Generate stunning collages across Japanese art styles. Ukiyo-e, Sumi-e, Rinpa, Kano, and more — powered by AI.',
+  title: 'Nihonga — Japanese Art Gallery',
+  description: 'Explore twelve centuries of Japanese art traditions — from Ukiyo-e woodblocks to cyberpunk neon. A visual gallery of classical and modern Japanese aesthetics.',
   icons: { icon: '/icon.svg' },
 };
 
