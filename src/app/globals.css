@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&display=swap');
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Alegreya', Georgia, serif;
+  background-color: #faf8f2;
+  color: #1a1714;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bodoni Moda', Didot, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: #c23b2230;
+  color: #1a1714;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c4bdb2; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9e9688; }
+
+@keyframes reveal-from-ink {
+  0% { opacity: 0; filter: blur(8px) grayscale(100%); }
+  60% { opacity: 0.8; filter: blur(2px) grayscale(30%); }
+  100% { opacity: 1; filter: blur(0) grayscale(0%); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.image-reveal {
+  animation: reveal-from-ink 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.float-gentle {
+  animation: float-gentle 6s ease-in-out infinite;
+}
