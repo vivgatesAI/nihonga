@@ -1,331 +1,299 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { GALLERY, GalleryItem } from '@/lib/gallery';
 
 function SealMark({ char, color, size = 28 }: { char: string; color: string; size?: number }) {
   return (
     <div
       className="flex items-center justify-center border-[1.5px] rounded-[1px] shrink-0"
-      style={{ width: size, height: size, borderColor: color, color, fontSize: size * 0.5, fontFamily: "'Bodoni Moda', serif", lineHeight: 1 }}
+      style={{ width: size, height: size, borderColor: color, color, fontSize: size * 0.48, fontFamily: "'Vollkorn', serif", lineHeight: 1 }}
     >
       {char}
     </div>
   );
 }
 
-function StyleCard({ item, index, onClick }: { item: GalleryItem; index: number; onClick: () => void }) {
-  const [hovered, setHovered] = useState(false);
-  const image = item.images[0];
+function ArtCard({ item, index, onClick }: { item: GalleryItem; index: number; onClick: () => void }) {
+  const img = item.images[index % item.images.length];
+  // Featured cards span 2 cols for first 2 items
+  const isFeatured = index < 2;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ delay: index * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="group cursor-pointer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+    <button
       onClick={onClick}
+      className="art-card group text-left w-full"
+      style={{ animationDelay: `${index * 60}ms` }}
     >
       {/* Image */}
-      <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-white/[0.02]"
-        style={{ boxShadow: hovered ? `0 20px 60px -15px ${item.color}30` : '0 4px 20px -8px rgba(0,0,0,0.3)' }}>
+      <div
+        className="relative overflow-hidden rounded-sm bg-[var(--bg-elevated)]"
+        style={{ aspectRatio: isFeatured ? '16/10' : '4/3' }}
+      >
         <img
-          src={image}
+          src={img}
           alt={item.nameEn}
-          className="w-full h-full object-cover transition-transform duration-700"
-          style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
+          className="ink-wash w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+          loading={index < 4 ? 'eager' : 'lazy'}
         />
-        {/* Category badge */}
-        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[9px] uppercase tracking-wider font-semibold"
-          style={{ backgroundColor: item.category === 'traditional' ? 'rgba(184,150,62,0.2)' : item.category === 'modern' ? 'rgba(232,89,110,0.2)' : 'rgba(90,138,90,0.2)', color: item.category === 'traditional' ? '#b8963e' : item.category === 'modern' ? '#e8596e' : '#5a8a5a', backdropFilter: 'blur(8px)' }}
-        >
-          {item.category === 'traditional' ? 'Classical' : item.category === 'modern' ? 'Modern' : 'Lifestyle'}
-        </div>
-        {/* Always-visible name label */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent px-4 pt-8 pb-3">
-          <div className="flex items-center gap-2">
-            <SealMark char={item.kanji[0]} color={item.color} size={18} />
-            <span className="font-display text-[14px] text-white/90">{item.name}</span>
-            <span className="text-white/40 text-[11px]">{item.kanji}</span>
+
+        {/* Bottom gradient with name */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[oklch(8%_0.01_25/90%)] via-[oklch(8%_0.01_25/40%)] to-transparent pt-16 pb-3 px-3">
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-base leading-none" style={{ color: 'var(--text-primary)' }}>{item.name}</span>
+            <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.kanji}</span>
           </div>
+          <p className="text-[11px] leading-snug mt-0.5 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
+            {item.nameEn}
+          </p>
         </div>
-        {/* Hover: description overlay */}
-        <div className="absolute inset-0 transition-opacity duration-400"
-          style={{ opacity: hovered ? 1 : 0, background: `linear-gradient(to top, ${item.color}ee 0%, ${item.color}99 40%, transparent 80%)` }}
+
+        {/* Category dot — subtle, top-right */}
+        <div
+          className="absolute top-2.5 right-2.5 w-[7px] h-[7px] rounded-full"
+          style={{ backgroundColor: item.color }}
         />
-        <div className="absolute bottom-0 left-0 right-0 p-5 transition-all duration-400"
-          style={{ opacity: hovered ? 1 : 0, transform: hovered ? 'translateY(0)' : 'translateY(10px)' }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <SealMark char={item.kanji[0]} color="#fff" size={18} />
-            <span className="font-display text-[14px] text-white">{item.name}</span>
-            <span className="text-white/40 text-[11px]">{item.period}</span>
-          </div>
-          <p className="text-white/90 text-[12px] leading-snug line-clamp-3">{item.description}</p>
-        </div>
       </div>
 
-      {/* Caption */}
-      <div className="mt-3 flex items-start gap-2.5 px-0.5">
-        <SealMark char={item.kanji[0]} color={item.color} size={24} />
-        <div className="min-w-0">
-          <h3 className="font-display text-[15px] leading-tight text-sumi truncate">{item.name}</h3>
-          <p className="text-[11px] text-inkFaint/50 mt-0.5 truncate">{item.nameEn}</p>
-        </div>
+      {/* Hover description — slides up from bottom */}
+      <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 max-h-0 group-hover:max-h-24 overflow-hidden">
+        <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+          {item.description}
+        </p>
       </div>
-    </motion.div>
+    </button>
   );
 }
 
-function DetailView({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
+function ExpandedView({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
   const [activeImg, setActiveImg] = useState(0);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
-      style={{ backgroundColor: 'rgba(10,8,6,0.92)', backdropFilter: 'blur(20px)' }}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
+      style={{ backgroundColor: 'oklch(8% 0.01 25 / 94%)', backdropFilter: 'blur(24px)' }}
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-washiDark border border-white/[0.06] rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto"
-        style={{ boxShadow: `0 0 80px -20px ${item.color}25` }}
+      <div
+        className="reveal w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-sm"
+        style={{ backgroundColor: 'var(--bg-elevated)', boxShadow: '0 40px 80px -20px oklch(8% 0.02 25 / 60%)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Hero image */}
-        <div className="relative aspect-[16/9] sm:aspect-[2/1] overflow-hidden rounded-t-3xl">
+        {/* Image */}
+        <div className="relative aspect-[16/9] sm:aspect-[2/1]">
           <img
             src={item.images[activeImg]}
             alt={item.nameEn}
             className="w-full h-full object-cover"
           />
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-washiDark via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-elevated)] via-transparent to-transparent" />
 
-          {/* Close button */}
+          {/* Close */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-sumi/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:bg-sumi/60 hover:text-white transition-colors"
+            className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full transition-colors"
+            style={{ backgroundColor: 'oklch(12% 0.015 25 / 60%)', backdropFilter: 'blur(8px)', color: 'var(--text-primary)' }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
           </button>
 
-          {/* Title overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
-            <div className="flex items-end justify-between">
+          {/* Bottom info */}
+          <div className="absolute bottom-0 inset-x-0 px-5 sm:px-8 pb-5 pt-16">
+            <div className="flex items-end justify-between gap-4">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <SealMark char={item.kanji[0]} color={item.color} size={36} />
+                <div className="flex items-center gap-3 mb-1">
+                  <SealMark char={item.kanji[0]} color={item.color} size={32} />
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-2xl sm:text-3xl leading-tight text-white">{item.name}</span>
-                      <span className="text-white/50 font-display text-xl sm:text-2xl">{item.kanji}</span>
-                    </div>
-                    <p className="text-white/50 text-[12px] mt-0.5">{item.nameEn}</p>
+                    <h2 className="font-display text-xl sm:text-2xl leading-none" style={{ color: 'var(--text-primary)' }}>{item.name}</h2>
+                    <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{item.kanji} · {item.nameEn}</p>
                   </div>
                 </div>
               </div>
-              <div className="hidden sm:block text-right">
-                <span className="text-[9px] uppercase tracking-widest font-semibold px-2.5 py-1 rounded-full"
-                  style={{ backgroundColor: item.category === 'traditional' ? `${item.color}20` : item.category === 'modern' ? `${item.color}20` : `${item.color}20`, color: item.color }}
+              <div className="text-right shrink-0">
+                <span className="text-[9px] uppercase tracking-widest font-semibold px-2 py-0.5 rounded-sm"
+                  style={{ backgroundColor: `${item.color}18`, color: item.color }}
                 >
                   {item.category === 'traditional' ? 'Classical' : item.category === 'modern' ? 'Modern' : 'Lifestyle'}
                 </span>
-                <p className="text-white/30 text-[11px] mt-1.5">{item.period}</p>
+                <p className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>{item.period}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Description + thumbnails */}
-        <div className="p-5 sm:p-8">
-          <p className="text-inkLight text-[15px] leading-relaxed mb-6 max-w-2xl">{item.description}</p>
+        <div className="px-5 sm:px-8 pt-4 pb-6">
+          <p className="text-[14px] leading-relaxed max-w-xl" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
 
-          {/* Image selector thumbnails */}
           {item.images.length > 1 && (
-            <div className="flex gap-3">
+            <div className="flex gap-2 mt-5">
               {item.images.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImg(idx)}
-                  className={`w-24 h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
-                    idx === activeImg ? 'border-white/30 shadow-lg' : 'border-white/[0.06] opacity-50 hover:opacity-80'
-                  }`}
+                  className="block w-20 h-14 rounded-sm overflow-hidden transition-all"
+                  style={{
+                    border: idx === activeImg ? '2px solid var(--text-primary)' : '2px solid transparent',
+                    opacity: idx === activeImg ? 1 : 0.4,
+                  }}
                 >
-                  <img src={img} alt={`${item.name} variant ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
 export default function NihongaGallery() {
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [filter, setFilter] = useState<'all' | 'traditional' | 'modern' | 'lifestyle'>('all');
-  const galleryRef = useRef<HTMLDivElement>(null);
 
-  const filteredGallery = filter === 'all' ? GALLERY : GALLERY.filter(g => g.category === filter);
-  const traditionalCount = GALLERY.filter(g => g.category === 'traditional').length;
-  const modernCount = GALLERY.filter(g => g.category === 'modern').length;
-  const lifestyleCount = GALLERY.filter(g => g.category === 'lifestyle').length;
+  const filtered = filter === 'all' ? GALLERY : GALLERY.filter(g => g.category === filter);
+  const counts = {
+    all: GALLERY.length,
+    traditional: GALLERY.filter(g => g.category === 'traditional').length,
+    modern: GALLERY.filter(g => g.category === 'modern').length,
+    lifestyle: GALLERY.filter(g => g.category === 'lifestyle').length,
+  };
+
+  // Featured takes first 2, then grid
+  const featured = filtered.slice(0, 2);
+  const grid = filtered.slice(2);
 
   return (
-    <div className="min-h-screen bg-washiDark text-sumi paper-texture">
-      {/* Background ink washes */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-64 -right-64 w-[800px] h-[800px] rounded-full opacity-[0.03]" style={{ background: 'radial-gradient(circle, #c23b22, transparent 70%)' }} />
-        <div className="absolute -bottom-48 -left-48 w-[600px] h-[600px] rounded-full opacity-[0.02]" style={{ background: 'radial-gradient(circle, #b8963e, transparent 70%)' }} />
-        <div className="absolute top-1/3 left-1/4 w-[900px] h-[400px] rounded-full opacity-[0.015]" style={{ background: 'radial-gradient(ellipse, #5a6b52, transparent 70%)' }} />
-      </div>
+    <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative z-10 min-h-[85vh] sm:min-h-screen flex flex-col justify-center items-center text-center px-5 sm:px-8">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="seal stamp-in" style={{ borderColor: '#c23b22', color: '#c23b22' }}>画</div>
+      {/* ── HERO ── */}
+      <header className="max-w-5xl mx-auto px-5 sm:px-8 pt-12 sm:pt-20 pb-8 sm:pb-14">
+        {/* Nav */}
+        <nav className="flex items-center justify-between mb-16 sm:mb-24">
+          <div className="flex items-center gap-2.5">
+            <SealMark char="画" color="var(--vermillion)" size={24} />
+            <div>
+              <div className="font-display text-[13px] leading-none" style={{ color: 'var(--text-primary)' }}>
+                <span style={{ color: 'var(--vermillion)' }}>日</span>本<span style={{ color: 'var(--vermillion)' }}>画</span>
+              </div>
+              <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: 'var(--text-tertiary)' }}>Gallery</div>
+            </div>
           </div>
-          <h1 className="font-display text-[clamp(2.8rem,9vw,6rem)] leading-[0.9] tracking-tight mb-4">
-            <span className="text-vermillion">日</span>本<span className="text-vermillion">画</span>
-          </h1>
-          <p className="font-display text-[clamp(1rem,2.5vw,1.5rem)] text-inkLight/60 tracking-wide mb-8 max-w-md mx-auto">
-            Six centuries of Japanese art<br />in one gallery
-          </p>
-          <p className="text-inkFaint/40 text-sm max-w-lg mx-auto leading-relaxed mb-10">
-From Edo-period woodblocks to cyberpunk neon. From Zen gardens to samurai armor. From tea ceremony to festival fireworks. Explore twenty-two traditions — art, style, and daily life across six centuries.
-          </p>
-          <button
-            onClick={() => galleryRef.current?.scrollIntoView({ behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-vermillion text-washiDark font-display text-[14px] tracking-tight rounded-xl hover:bg-vermillionDark active:scale-[0.98] transition-all duration-200"
-          >
-            Explore the Gallery
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-          </button>
-        </motion.div>
+          <div className="text-[10px] tracking-wider uppercase" style={{ color: 'var(--text-tertiary)' }}>
+            22 Traditions · 6 Centuries
+          </div>
+        </nav>
 
-        {/* Decorative seal row */}
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-3">
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">浮</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">墨</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">琳</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">禅</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">着</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">茶</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">祭</span>
-          <span className="text-inkFaint/[0.08] font-display text-4xl select-none">ア</span>
+        {/* Title */}
+        <div className="max-w-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] mb-4 reveal" style={{ color: 'var(--vermillion)' }}>
+            Japanese Art & Culture
+          </p>
+          <h1 className="font-display text-[clamp(2rem,7vw,4rem)] leading-[0.95] tracking-tight reveal stagger-1" style={{ color: 'var(--text-primary)' }}>
+            One subject.<br />Six centuries<br />
+            <span style={{ color: 'var(--vermillion)' }}>of beauty.</span>
+          </h1>
+          <p className="mt-5 text-base leading-relaxed max-w-md reveal stagger-2" style={{ color: 'var(--text-secondary)' }}>
+            From Edo woodblocks to neon rain. From Zen ensō to chibi kawaii. Explore 22 traditions of Japanese art and life — each revealing something the others cannot.
+          </p>
+        </div>
+      </header>
+
+      <div className="max-w-5xl mx-auto px-5 sm:px-8"><div className="divider" /></div>
+
+      {/* ── FILTER ── */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-8 pb-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          {(['all', 'traditional', 'modern', 'lifestyle'] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className="px-3 py-1.5 text-[11px] font-medium tracking-wide uppercase rounded-sm transition-all duration-200"
+              style={{
+                backgroundColor: filter === f ? 'var(--bg-surface)' : 'transparent',
+                color: filter === f ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                border: filter === f ? '1px solid var(--border)' : '1px solid transparent',
+              }}
+            >
+              {f === 'all' ? `All ${counts.all}` : f === 'traditional' ? `Classical ${counts.traditional}` : f === 'modern' ? `Modern ${counts.modern}` : `Lifestyle ${counts.lifestyle}`}
+            </button>
+          ))}
         </div>
       </section>
 
-      {/* ═══ GALLERY ═══ */}
-      <section ref={galleryRef} className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pb-24">
-        <div className="ink-divider mb-10" />
-
-        {/* Filter tabs */}
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="font-display text-2xl sm:text-3xl tracking-tight">The Gallery</h2>
-          <div className="flex-1" />
-          <div className="flex items-center gap-1 bg-white/[0.03] rounded-xl p-1 border border-white/[0.04]">
-            {(['all', 'traditional', 'modern', 'lifestyle'] as const).map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-3.5 py-1.5 rounded-lg text-[11px] font-medium tracking-wide uppercase transition-all duration-200 ${
-                  filter === f ? 'bg-white/[0.08] text-sumi' : 'text-inkFaint/50 hover:text-inkLight'
-                }`}
-              >
-                {f === 'all' ? `All ${GALLERY.length}` : f === 'traditional' ? `Classical ${traditionalCount}` : f === 'modern' ? `Modern ${modernCount}` : `Lifestyle ${lifestyleCount}`}
-              </button>
+      {/* ── FEATURED (2 large) ── */}
+      {featured.length > 0 && (
+        <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {featured.map((item, i) => (
+              <ArtCard key={item.id} item={item} index={i} onClick={() => setSelectedItem(item)} />
             ))}
           </div>
-        </div>
+        </section>
+      )}
 
-        {/* Masonry-like grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {filteredGallery.map((item, idx) => (
-            <StyleCard
-              key={item.id}
-              item={item}
-              index={idx}
-              onClick={() => setSelectedItem(item)}
-            />
-          ))}
+      {/* ── GRID (remaining) ── */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-4 pb-20">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {grid.map((item, i) => (
+            <ArtCard key={item.id} item={item} index={i + 2} onClick={() => setSelectedItem(item)} />
+            ))}
         </div>
       </section>
 
-      {/* ═══ TIMELINE ═══ */}
-      <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pb-24">
-        <div className="ink-divider mb-10" />
-        <h2 className="font-display text-2xl sm:text-3xl tracking-tight mb-2">Through the Centuries</h2>
-        <p className="text-inkFaint/50 text-sm mb-10">A timeline of Japanese art and culture, from temple screens to neon streets.</p>
-
+      {/* ── TIMELINE ── */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-8"><div className="divider" /></div>
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
+        <h2 className="font-display text-2xl sm:text-3xl tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Through the Centuries</h2>
+        <p className="text-[13px] mb-10" style={{ color: 'var(--text-tertiary)' }}>Japanese art and culture, from temple screens to neon streets.</p>
         <div className="space-y-0">
           {GALLERY.sort((a, b) => {
-            const getYear = (p: string) => parseInt(p.match(/\d{4}/)?.[0] || '1400');
-            return getYear(a.period) - getYear(b.period);
-          }).map((item, idx) => (
-            <motion.div
+            const year = (s: string) => parseInt(s.match(/\d{4}/)?.[0] || '1400');
+            return year(a.period) - year(b.period);
+          }).map((item, i) => (
+            <button
               key={item.id}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.08, duration: 0.5 }}
-              className="flex gap-4 sm:gap-6 group cursor-pointer"
               onClick={() => setSelectedItem(item)}
+              className="group flex gap-4 sm:gap-6 w-full text-left py-3 transition-colors"
+              style={{ borderBottom: '1px solid var(--border-light)' }}
             >
               {/* Dot + line */}
-              <div className="flex flex-col items-center">
-                <div className="w-2.5 h-2.5 rounded-full shrink-0 mt-2 transition-colors duration-300 group-hover:scale-125"
-                  style={{ backgroundColor: item.color }}
-                />
-                <div className="w-px flex-1 bg-white/[0.06]" />
+              <div className="flex flex-col items-center shrink-0">
+                <div className="w-2 h-2 rounded-full mt-1.5 shrink-0 transition-transform duration-200 group-hover:scale-150" style={{ backgroundColor: item.color }} />
               </div>
               {/* Content */}
-              <div className="pb-8">
-                <p className="text-[10px] uppercase tracking-[0.15em] font-semibold mb-1" style={{ color: item.color }}>{item.period}</p>
-                <h3 className="font-display text-lg leading-tight group-hover:text-vermillion transition-colors">{item.name} <span className="text-inkFaint/30 font-display">{item.kanji}</span></h3>
-                <p className="text-inkFaint/40 text-[12px] mt-1 max-w-sm">{item.nameEn}</p>
+              <div className="pb-3 min-w-0">
+                <div className="text-[9px] uppercase tracking-[0.15em] font-semibold" style={{ color: item.color }}>{item.period}</div>
+                <div className="font-display text-base leading-tight group-hover:translate-x-1 transition-transform duration-200" style={{ color: 'var(--text-primary)' }}>
+                  {item.name} <span style={{ color: 'var(--text-tertiary)' }}>{item.kanji}</span>
+                </div>
+                <div className="text-[11px] line-clamp-1" style={{ color: 'var(--text-tertiary)' }}>{item.nameEn}</div>
               </div>
-            </motion.div>
+            </button>
           ))}
         </div>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer className="relative z-10 border-t border-white/[0.04]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 text-[11px] text-inkFaint/30">
-            <div className="seal w-[18px] h-[18px] text-[8px] border opacity-30">画</div>
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: '1px solid var(--border-light)' }}>
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+            <SealMark char="画" color="var(--text-tertiary)" size={16} />
             <span>Nihonga Gallery</span>
-            <span className="text-gold/20">·</span>
-            <span>Japanese Art Engine</span>
+            <span style={{ color: 'var(--gold-dim)' }}>·</span>
+            <span>Venice AI</span>
           </div>
-          <div className="text-[10px] text-inkFaint/15 tracking-[0.15em]">
+          <div className="text-[9px] tracking-[0.15em]" style={{ color: 'oklch(35% 0.01 25)' }}>
             六伝統 · 一題材 · 無限美
           </div>
         </div>
       </footer>
 
-      {/* ═══ DETAIL MODAL ═══ */}
-      <AnimatePresence>
-        {selectedItem && (
-          <DetailView item={selectedItem} onClose={() => setSelectedItem(null)} />
-        )}
-      </AnimatePresence>
+      {/* ── EXPANDED VIEW ── */}
+      {selectedItem && (
+        <ExpandedView item={selectedItem} onClose={() => setSelectedItem(null)} />
+      )}
     </div>
   );
 }

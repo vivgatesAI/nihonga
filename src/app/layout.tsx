@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Nihonga — Japanese Art Gallery',
-  description: 'Explore twelve centuries of Japanese art traditions — from Ukiyo-e woodblocks to cyberpunk neon. A visual gallery of classical and modern Japanese aesthetics.',
+  title: 'Nihonga — Japanese Art & Culture Gallery',
+  description: 'Explore 22 traditions of Japanese art and life — from Ukiyo-e woodblocks to cyberpunk neon, from Zen gardens to festival fireworks.',
   icons: { icon: '/icon.svg' },
 };
 
