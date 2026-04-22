@@ -1,3 +1,5 @@
+import './globals.css';
+
 export const metadata = {
   title: 'Nihonga — Japanese Art & Culture Gallery',
   description: 'Explore 22 traditions of Japanese art and life — from Ukiyo-e woodblocks to cyberpunk neon, from Zen gardens to festival fireworks.',
