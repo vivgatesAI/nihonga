@@ -153,7 +153,7 @@ export const GALLERY: GalleryItem[] = [
     nameEn: 'People & Traditions',
     kanji: '日常生活',
     period: 'All Eras',
-    description: 'A curated collection of 30 images showcasing daily life, traditions, ceremonies, and people across Japanese history — from Edo merchants to modern Tokyo.',
+    description: '✦ 30 IMAGES — Daily life, traditions, ceremonies, and people across Japanese history. Click to explore: Edo merchants, artisans, tea ceremonies, samurai, festivals, anime & modern Tokyo life.',
     category: 'lifestyle',
     images: [
       '/gallery/lifestyle_ukiyoe_daily_1.png', '/gallery/lifestyle_ukiyoe_daily_2.png',
@@ -180,7 +180,7 @@ export const GALLERY: GalleryItem[] = [
     nameEn: 'Beauty in Imperfection',
     kanji: '侘寂の生活',
     period: '15th Century–Present',
-    description: 'Intimate moments of wabi-sabi living — ikebana arrangements, afternoon light through shoji, weathered beams, peaceful domesticity.',
+    description: '✦ 2 IMAGES — Intimate wabi-sabi moments: ikebana arrangements, afternoon light through shoji screens, weathered beams, peaceful domesticity.',
     category: 'lifestyle',
     images: ['/gallery/lifestyle_wabisabi_daily_1.png', '/gallery/lifestyle_seasons_daily_1.png'],
     color: '#9a8a7a',

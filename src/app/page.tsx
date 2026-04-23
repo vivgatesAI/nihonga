@@ -149,8 +149,16 @@ export default function NihongaGallery() {
                     <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{item.kanji}</span>
                   </div>
                 </div>
-                {/* Category dot */}
-                <div className="absolute top-2 right-2 w-[6px] h-[6px] rounded-full" style={{ backgroundColor: item.color }} />
+                {/* Category dot & image count */}
+                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                  {item.images.length > 2 && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-sm font-medium" 
+                      style={{ backgroundColor: 'oklch(15% 0.01 25 / 80%)', color: 'var(--text-primary)' }}>
+                      {item.images.length}
+                    </span>
+                  )}
+                  <div className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: item.color }} />
+                </div>
               </div>
 
               {/* Hover description */}
